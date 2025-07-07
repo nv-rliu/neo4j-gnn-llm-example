@@ -65,6 +65,7 @@ def train(
     algo_config_version,
     g_retriever_config_version,
     checkpointing=False,
+    sys_prompt
 ):
     def adjust_learning_rate(param_group, LR, epoch):
         # Decay the learning rate with half-cycle cosine after warmup
@@ -132,11 +133,23 @@ def train(
     )
 
     if llama_version == 'tiny_llama':
-        llm = LLM(model_name='TinyLlama/TinyLlama-1.1B-Chat-v0.1', num_params=1)
+        llm = LLM(
+            model_name='TinyLlama/TinyLlama-1.1B-Chat-v0.1',
+            num_params=1,
+            sys_prompt=sys_prompt
+        )
     elif llama_version == 'llama2-7b':
-        llm = LLM(model_name='meta-llama/Llama-2-7b-chat-hf', num_params=7)
+        llm = LLM(
+            model_name='meta-llama/Llama-2-7b-chat-hf',
+            num_params=7,
+            sys_prompt=sys_prompt
+        )
     elif llama_version == 'llama3.1-8b':
-        llm = LLM(model_name='meta-llama/Llama-3.1-8B-Instruct', num_params=8)
+        llm = LLM(
+            model_name='meta-llama/Llama-3.1-8B-Instruct',
+            num_params=8,
+            sys_prompt=sys_prompt
+        )
 
 
     if args.freeze_llm:
@@ -259,6 +272,12 @@ if __name__ == '__main__':
     parser.add_argument('--algo_config_version', type=int, required=True)
     parser.add_argument('--g_retriever_config_version', type=int, required=True)
     parser.add_argument('--freeze_llm', type=bool, default=False)
+    sys_prompt = (
+        "You are an expert assistant that can answer "
+        "any question from its knowledge, given a knowledge graph embedding and "
+        "it's textualized context. Just give the answer, without explanation."
+    )
+    parser.add_argument('--sys_prompt', type=str, default=sys_prompt)
     args = parser.parse_args()
     load_dotenv('db.env', override=True)
 
@@ -275,5 +294,6 @@ if __name__ == '__main__':
         algo_config_version=args.algo_config_version,
         g_retriever_config_version=args.g_retriever_config_version,
         checkpointing=args.checkpointing,
+        sys_prompt=args.sys_prompt
     )
     print(f"Total Time: {time.time() - start_time:2f}s")
