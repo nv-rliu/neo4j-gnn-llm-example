@@ -132,31 +132,18 @@ def train(
         num_layers=num_gnn_layers,
         heads=4,
     )
-    
-
-    common_args = {
-        'sys_prompt': sys_prompt,
-        'n_gpus': num_gpus	
-    }
-
-    print("=====")
-    print(f"common_args: {common_args}")
-    print("=====")
 
     if llama_version == 'tiny_llama':
         llm = LLM(
             model_name='TinyLlama/TinyLlama-1.1B-Chat-v0.1',
-            **common_args
         )
     elif llama_version == 'llama2-7b':
         llm = LLM(
             model_name='meta-llama/Llama-2-7b-chat-hf',
-            **common_args
         )
     elif llama_version == 'llama3.1-8b':
         llm = LLM(
             model_name='meta-llama/Llama-3.1-8B-Instruct',
-            **common_args
         )
 
 
