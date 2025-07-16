@@ -28,22 +28,6 @@ neo4j restart
 # NEO4J_USERNAME=neo4j
 # NEO4J_PASSWORD=mypassword
 # 
-
-
-#######
-# Step 2: Get Python 3.11
-pushd /usr/src
-apt-get install libffi-dev
-curl -O https://www.python.org/ftp/python/3.11.9/Python-3.11.9.tgz
-tar -xzf Python-3.11.9.tgz
-cd Python-3.11.9
-./configure --enable-optimizations
-make -j$(nproc)
-make altinstall
-
-update-alternatives --install /usr/bin/python python /usr/local/bin/python3.11 1
-echo "Location of Python: $(which python) and version $(python --version)"
-
 # To manually select python on system
 # update-alternatives --config python 
 popd
