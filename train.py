@@ -17,7 +17,7 @@ from tqdm import tqdm
 
 from compute_metrics import compute_metrics
 
-from STaRKQADataset import STaRKQADataset
+from STaRKQADatasetGDS import STaRKQADataset
 from STaRKQAVectorSearchDataset import STaRKQAVectorSearchDataset
 
 def get_loss(model, batch, model_save_name) -> Tensor:
@@ -48,7 +48,8 @@ def save_params_dict(model, save_path):
     torch.save(state_dict, save_path)
 
 def load_params_dict(model, save_path):
-    state_dict = torch.load(save_path)
+    state_dict = model.state_dict()
+    state_dict.update(torch.load(save_path)) #All weights might not be saved, eg when using LoRA.
     model.load_state_dict(state_dict)
     return model
 
@@ -185,7 +186,6 @@ def train(
 
         for step, batch in enumerate(loader):
             optimizer.zero_grad()
-            # first call to get_loss
             loss = get_loss(model, batch, model_save_name)
             loss.backward()
 
@@ -267,13 +267,6 @@ if __name__ == '__main__':
     parser.add_argument('--algo_config_version', type=int, required=True)
     parser.add_argument('--g_retriever_config_version', type=int, required=True)
     parser.add_argument('--freeze_llm', type=bool, default=False)
-    default_llm_prompt = (
-        "You are an expert assistant that can answer any question from its knowledge, "
-        "given an extracted subgraph and the textual description of the nodes and "
-        "its textualized context. Just give the answer, without explanation."
-    )
-    parser.add_argument('--sys_prompt', type=str, default=default_llm_prompt)
-    parser.add_argument('--num_gpus', type=int, default=4)
     args = parser.parse_args()
     load_dotenv('db.env', override=True)
 
