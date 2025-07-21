@@ -36,6 +36,13 @@ popd
 # Step 3: Get dependencies and load data
 # in neo4j-benchmark repo directory 
 pip install -r requirements.txt
+git clone https://github.com/snap-stanford/stark.git
+pushd stark
+# frozen commit after last update to support python3.12
+git checkout e98459b
+pip install .
+popd
+
 pushd data-loading
 python emb_download.py --dataset prime --emb_dir emb/
 python load_data.py
